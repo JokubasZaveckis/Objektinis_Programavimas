@@ -1,1 +1,1 @@
-v0.2
+Programa papildyta funkcija, kuri leidžia skaityti duomenis iš failo, atspausdindama rezultatus į naują rezultatų failą. Funkcija nuskaito failo eilutę ir išskaido joje esančius elementus, kad būtų galima apskaičiuoti galutinį pažymį.

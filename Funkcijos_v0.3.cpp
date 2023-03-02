@@ -1,54 +1,70 @@
 #include "Header.h"
+#include "Funkcijos.h"
 
-struct Studentas
+void Skaitymas(vector <Studentas>& grupe)
 {
-	string vardas, pavarde;
-	int n=0, egzaminas=0;
-	float vidurkis=0, mediana=0;
-	vector<int> pazymiai;
 
-};
+	string failas;
+	ifstream duomenys;
 
-void Pildymas(Studentas& temp);
-float Vidurkis(Studentas temp);
-float Mediana(Studentas temp);
-void Isvedimas(vector<Studentas> grupe);
-
-int main()
-{
-	int pasirinkimas;
-	vector<Studentas> grupe;
-	int talpa = 50;
-	grupe.reserve(talpa);
-	Studentas laikinas;
-	do {
-		cout << "Iveskite studento duomenis" << endl;
-		if (grupe.capacity() == grupe.size())
-		{
-			grupe.reserve(talpa * 2);
-		}
-		Pildymas(laikinas);
-		grupe.push_back(laikinas);
-		laikinas.pazymiai.clear();
-		cout << "Iveskite 1, kad pratestumete studentu irasyma, arba bet ka kito kad uzbaigtumete" << endl;
-		cin >> pasirinkimas;
-	} while (pasirinkimas == 1);
-
-	grupe.shrink_to_fit();
-
-	Isvedimas(grupe);
-
-	for (int i = 0; i < grupe.size(); i++)
+	while (true)
 	{
-		grupe[i].pazymiai.clear();
+		cout << "Iveskite is kurio failo noretumete nuskaityti duomenis:" << endl;
+		cin >> failas;
+
+		try {
+			duomenys.open(failas);
+
+			if (!duomenys)
+			{
+				throw std::runtime_error("Failo atverti nepavyko, bandykite dar karta: ");
+			}
+			else
+			{
+				cout << "Failas atidarytas sekmingai, nuskaitoma..." << endl;
+				break;
+			}
+
+		}
+		catch (std::exception& e)
+		{
+			cout << "Error: " << e.what() << endl;
+			cout << "Galimi tekstinio failo pavadinimai:" << endl;
+			system("dir /b | findstr \\.txt$");
+		}
 	}
-	grupe.clear();
+
+	string pirmaEilute;
+	getline(duomenys, pirmaEilute);
+
+	string line;
+	while (getline(duomenys, line)) {
+		Studentas temp;
+		std::istringstream ss(line);
+		ss >> temp.vardas >> temp.pavarde;
+		int pazymys;
+		while (ss >> pazymys) {
+			temp.pazymiai.push_back(pazymys);
+		}
+		temp.egzaminas = temp.pazymiai.back();
+		temp.pazymiai.pop_back();
+
+		temp.vidurkis = Vidurkis(temp);
+		temp.mediana = Mediana(temp);
+		grupe.push_back(temp);
+	}
+	duomenys.close();
+
 }
+
+bool Palyginimas(const Studentas a, Studentas b)
+{
+	return a.vardas < b.vardas;
+}
+
 
 void Pildymas(Studentas& temp)
 {
-	int talpa = 50;
-	temp.pazymiai.reserve(talpa);
 	cout << "Iveskite studento varda ir pavarde:" << endl;
 	cin >> temp.vardas >> temp.pavarde;
 
@@ -68,11 +84,7 @@ void Pildymas(Studentas& temp)
 		for (int j = 0; j < temp.n; j++)
 		{
 			cin >> pazymys;
-			if (temp.pazymiai.capacity() == temp.pazymiai.size())
-			{
-				temp.pazymiai.reserve(talpa * 2);
-			}
-			if (pazymys > 0 && pazymys < INT_MAX)
+			if (pazymys > 0 && pazymys < 11)
 			{
 				temp.pazymiai.push_back(pazymys);
 			}
@@ -91,18 +103,10 @@ void Pildymas(Studentas& temp)
 		std::mt19937 mt(static_cast<long unsigned int> (rd()));
 		std::uniform_int_distribution<int> dist(1, 10);
 		temp.n = dist(mt);
-		//srand(time(NULL));
-		//temp.n = rand() % 11 + 1;
 		for (int j = 0; j < temp.n; j++)
 		{
-			if (temp.pazymiai.capacity() == temp.pazymiai.size())
-			{
-				temp.pazymiai.reserve(talpa * 2);
-			}
-			//temp.pazymiai.push_back(rand() % 11 + 1);
 			temp.pazymiai.push_back(dist(mt));
 		}
-		//temp.egzaminas = rand() % 11 + 1;
 		temp.egzaminas = dist(mt);
 	}
 	else if (pasirinkimas == 3)
@@ -113,10 +117,6 @@ void Pildymas(Studentas& temp)
 			int mark;
 			if (cin >> mark)
 			{
-				if (temp.pazymiai.capacity() == temp.pazymiai.size())
-				{
-					temp.pazymiai.reserve(talpa * 2);
-				}
 				temp.pazymiai.push_back(mark);
 			}
 			else
@@ -134,33 +134,39 @@ void Pildymas(Studentas& temp)
 	temp.mediana = Mediana(temp);
 }
 
-float Vidurkis(Studentas temp)
+double Vidurkis(Studentas temp)
 {
-	float suma = 0;
+	double suma = 0;
 	for (int i = 0; i < temp.pazymiai.size(); i++)
 	{
 		suma += temp.pazymiai[i];
 	}
-	float vidurkis = suma / temp.pazymiai.size();
+	double vidurkis = suma / temp.pazymiai.size();
 
-	float pazymys = 0.4 * vidurkis + 0.6 * temp.egzaminas;
+	double pazymys = 0.4 * vidurkis + 0.6 * temp.egzaminas;
 	return pazymys;
 }
 
 float Mediana(Studentas temp)
 {
 	sort(temp.pazymiai.begin(), temp.pazymiai.end());
-	float mediana;
-	int dydis = temp.pazymiai.size();
+	size_t mediana;
+	size_t dydis = temp.pazymiai.size();
+	double dydis1 = dydis / 2.0 - 1;
+	double dydis2 = dydis / 2.0;
+
+	size_t vidurinis = temp.pazymiai[dydis / 2];
+	size_t vidurinis_mazesnis = temp.pazymiai[dydis / 2];
+
 	if (dydis % 2 == 0)
 	{
-		mediana = (temp.pazymiai[dydis / 2 - 1] + temp.pazymiai[dydis / 2]) / 2.0;
+		mediana = (vidurinis + vidurinis_mazesnis) / 2.0;
 	}
 	else
 	{
-		mediana = temp.pazymiai[dydis / 2];
+		mediana = temp.pazymiai[dydis2];
 	}
-	
+
 	float pazymys = 0.4 * mediana + 0.6 * temp.egzaminas;
 	return pazymys;
 }
@@ -173,4 +179,17 @@ void Isvedimas(vector<Studentas> grupe)
 	{
 		cout << left << setw(13) << grupe[i].vardas << setw(15) << grupe[i].pavarde << setw(20) << fixed << setprecision(2) << grupe[i].vidurkis << setw(20) << grupe[i].mediana << endl;
 	}
+}
+
+void IsvedimasIFaila(vector<Studentas> grupe)
+{
+	ofstream rezultatai("rezultatai.txt");
+	rezultatai << endl << left << setw(13) << "Vardas" << setw(15) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
+	rezultatai << "-----------------------------------------------------------------------------------" << endl;
+	for (int i = 0; i < grupe.size(); i++)
+	{
+		rezultatai << left << setw(13) << grupe[i].vardas << setw(15) << grupe[i].pavarde << setw(20) << fixed << setprecision(2) << grupe[i].vidurkis << setw(20) << grupe[i].mediana << endl;
+	}
+	rezultatai.close();
+	cout << "Programa baigta, rezultatai surasyti i rezultatai.txt faila" << endl;
 }

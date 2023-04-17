@@ -1,1 +1,6 @@
-# Objektinis_Programavimas
+1.0 versija yra galutinė projekto versija, kurioje buvo optimizuotas duomenų rūšiavimas į gerus ir blogus mokinius.
+Pirmoji projekto versija buvo sukurta dviejomis realizacijomis: su C masyvais ir su vektoriaus konteineriu, abi programos iš esmės darė tą patį: leido vartotojui pasirinkti ar nori studentų sąrašą įvesti rankinių būdu, ar nori kad pažymiai būtų sugeneruoti atsitiktinai ir įvesti norimą kiekį pažymių kiekvienam studentui. Porgrama apskaičiuoja studento vidurkį ir medianą ir surūšiuoja pagal vardą.
+Antroji programos versija buvo papildyta funkcija kuri leido skaityti duomenis iš failo ir juos taip pat spausdinti į tekstinį duomenų failą.
+Trečioji programos versija buvo papildyta saugumo funkcijomis, programa apsaugota nuo netinkamų vartotojo įvesčių.
+Ketvirtoji programos versija buvo papildyta funkcija, kuri lesdavo vartotojui pasirinkti failo dydį ir pagal įvestą skaičių sugeneruodavo atsitiktinius studentų vardus, pavardes bei pažymius, taip pat studentai buvo išrūšiuoti i du atskirs konteinerius, neproting - kurių vidurkis mažiau už 5 ir protingi - kuri vidurkis 5 ir daugiau.
+Penktoji programos versija buvo naudojama ištriti kaip pasikeis programos laikas naudojant skirtingo tipo konteinerius: vector, list ir deque. Šie laikai priklauso nuo vartotojo programinės įrangos tačiau labai ryšių ksirtumų būti neturėtų.

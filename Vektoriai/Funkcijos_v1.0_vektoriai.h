@@ -39,12 +39,11 @@ void Skaitymas(vector <Studentas>& grupe, float& nuskaitymas);
 void Pildymas(Studentas& temp);
 double Vidurkis(Studentas temp);
 float Mediana(Studentas temp);
-void Isvedimas(vector<Studentas> grupe);
 bool Palyginimas(const Studentas a, Studentas b);
-void IsvedimasIFaila(vector<Studentas> grupe);
+void IsvedimasIFaila(vector<Studentas> protingi, vector<Studentas> neprotingi, float& isvedimas);
 void FailoSukurimas(vector <Studentas>&, int failoDydis, int pazymiuSkaicius);
 bool Palyginimas1(const Studentas a, Studentas b);
-void KitiSkaiciavimai(vector <Studentas>& grupe);
+void KitiSkaiciavimai(vector <Studentas>& grupe, string strategija);
 
 #include <iostream>
 #include <string>

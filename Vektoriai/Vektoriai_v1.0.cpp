@@ -3,18 +3,18 @@
 
 int main()
 {
-	int pasirinkimas;
+	int pasirinkimas=0;
 	vector<Studentas> grupe;
 	int talpa = 50;
 	grupe.reserve(talpa);
 	Studentas laikinas;
-	string choice;
-	cout << "Iveskite 0 kad studentai butu nuskaitomi is failo" << endl;
-	cout << "Iveskite 1 kad studentus ivestumete ranka" << endl;
-	cout << "Iveskite 2 kad sugeneruotumete studentu faila" << endl;
-	cin >> choice;
 	while (true)
 	{
+		string choice;
+		cout << "Iveskite 0 kad studentai butu nuskaitomi is failo" << endl;
+		cout << "Iveskite 1 kad studentus ivestumete ranka" << endl;
+		cout << "Iveskite 2 kad sugeneruotumete studentu faila" << endl;
+		cin >> choice;
 		if (choice == "1")
 		{
 			do {
@@ -26,13 +26,36 @@ int main()
 				cin >> pasirinkimas;
 			} while (pasirinkimas == 1);
 
-			Isvedimas(grupe);
-			break;
+			cout << "Ar norite testi? (Iveskite 1, jei taip, arba bet koki kita skaiciu, jei ne.)" << endl;
+			cin >> pasirinkimas;
+			if (pasirinkimas != 1) {
+				break;
+			}
 		}
 		else if (choice == "0")
 		{
-			KitiSkaiciavimai(grupe);
-			break;
+			string strategija;
+			cout << "Kokia strategija noretumete naudoti? (1 arba 2)" << endl; 
+			cin >> strategija;
+			while (true)
+			{
+				if (strategija == "1" || strategija == "2")
+				{
+					break;
+				}
+				else
+				{
+					cout << "Netinkama ivestis, bandykite is naujo" << endl;
+					cin >> strategija;
+				}
+			}
+
+			KitiSkaiciavimai(grupe, strategija);
+			cout << "Ar norite testi? (Iveskite 1, jei taip, arba bet koki kita skaiciu, jei ne.)" << endl;
+			cin >> pasirinkimas;
+			if (pasirinkimas != 1) {
+				break;
+			}
 		}
 		else if (choice == "2")
 		{
@@ -67,7 +90,11 @@ int main()
 					cout << "Tokio pasirinkimo nera, bandykite dar karta: " << endl;
 				}
 			}
-			break;
+			cout << "Ar norite testi? (Iveskite 1, jei taip, arba bet koki kita skaiciu, jei ne.)" << endl;
+			cin >> pasirinkimas;
+			if (pasirinkimas != 1) {
+				break;
+			}
 		}
 		else
 		{
@@ -77,9 +104,9 @@ int main()
 	}
 
 
-	for (int i = 0; i < grupe.size(); i++)
+	for (auto& i : grupe)
 	{
-		grupe[i].pazymiai.clear();
+		i.pazymiai.clear();
 	}
 	grupe.clear();
 	return 0;

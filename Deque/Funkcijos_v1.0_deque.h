@@ -31,7 +31,7 @@ struct Studentas
     string vardas, pavarde;
     int n = 0, egzaminas = 0;
     double vidurkis = 0, mediana = 0;
-    deque<int> pazymiai;
+    vector<int> pazymiai;
 
 };
 
@@ -39,12 +39,11 @@ void Skaitymas(deque <Studentas>& grupe, float& nuskaitymas);
 void Pildymas(Studentas& temp);
 double Vidurkis(Studentas temp);
 float Mediana(Studentas temp);
-void Isvedimas(deque<Studentas> grupe);
 bool Palyginimas(const Studentas a, Studentas b);
-void IsvedimasIFaila(deque<Studentas> grupe);
+void IsvedimasIFaila(deque<Studentas> protingi, deque<Studentas> neprotingi, float& isvedimas);
 void FailoSukurimas(deque <Studentas>&, int failoDydis, int pazymiuSkaicius);
 bool Palyginimas1(const Studentas a, Studentas b);
-void KitiSkaiciavimai(deque <Studentas>& grupe);
+void KitiSkaiciavimai(deque <Studentas>& grupe, string strategija);
 
 #include <iostream>
 #include <string>

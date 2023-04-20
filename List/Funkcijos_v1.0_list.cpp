@@ -34,8 +34,8 @@ void FailoSukurimas(list <Studentas>& grupe, int failoDydis, int pazymiuSkaicius
 	auto endGeneravimas = std::chrono::high_resolution_clock::now();
 	auto generacija = std::chrono::duration_cast<std::chrono::milliseconds>(endGeneravimas - startGeneravimas).count();
 	cout << "Failo sugeneruotas" + std::to_string(failoDydis) + ".txt" " generavimas truko: " << fixed << setprecision(2) << static_cast<double>(generacija) / 1000 << "s" << endl;
-
-	KitiSkaiciavimai(grupe);
+	string strategija = "2";
+	KitiSkaiciavimai(grupe, strategija);
 }
 
 void Skaitymas(list <Studentas>& grupe, float& nuskaitymas)
@@ -96,12 +96,22 @@ void Skaitymas(list <Studentas>& grupe, float& nuskaitymas)
 	nuskaitymas = skaitymas;
 	cout << "Failo nuskaitymas truko: " << fixed << setprecision(2) << static_cast<double>(skaitymas) / 1000 << "s" << endl;
 
+	duomenys.close();
+
 }
 
-void KitiSkaiciavimai(list <Studentas>& grupe)
+void KitiSkaiciavimai(list <Studentas>& grupe, string strategija)
 {
 	float nuskaitymas;
+
+	for (auto& i : grupe)
+	{
+		i.pazymiai.clear();
+	}
+	grupe.clear();
+
 	Skaitymas(grupe, nuskaitymas);
+
 	auto start = std::chrono::high_resolution_clock::now();
 
 	auto startRikiavimas = std::chrono::high_resolution_clock::now();
@@ -110,48 +120,52 @@ void KitiSkaiciavimai(list <Studentas>& grupe)
 	auto Rikiavimas = std::chrono::duration_cast<std::chrono::milliseconds>(endRikiavimas - startRikiavimas).count();
 	cout << "Failo rikiavimas truko " << fixed << setprecision(2) << static_cast<double>(Rikiavimas) / 1000 << "s" << endl;
 
-	auto startRusiavimas = std::chrono::high_resolution_clock::now();
+	float isvedimas = 0.0;
+	float rusiavimas = 0.0;
 
-	list <Studentas> neprotingi;
-
-	auto it = std::remove_if(grupe.begin(), grupe.end(), [](const Studentas& s) { return s.vidurkis < 5.0; });
-	std::copy(it, grupe.end(), std::back_inserter(neprotingi));
-	grupe.erase(it, grupe.end());
-
-	auto endRusiavimas = std::chrono::high_resolution_clock::now();
-	auto rusiavimas = std::chrono::duration_cast<std::chrono::milliseconds>(endRusiavimas - startRusiavimas).count();
-	cout << "Failo rusiavimas truko: " << fixed << setprecision(2) << static_cast<double>(rusiavimas) / 1000 << "s" << endl;
-
-
-
-	auto startIsvedimas = std::chrono::high_resolution_clock::now();
-
-	ofstream smart("protingi.txt");
-
-	smart << left << setw(13) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
-	smart << "-----------------------------------------------------------------------------------" << endl;
-	for (auto& i : grupe)
+	if (strategija == "1")
 	{
-		smart << left << setw(13) << i.vardas << setw(20) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
+		auto startRusiavimas = std::chrono::high_resolution_clock::now();
+		list <Studentas> protingi;
+		list <Studentas> neprotingi;
+		for (auto& i : grupe)
+		{
+			if (i.vidurkis < 5)
+			{
+				neprotingi.push_back(i);
+			}
+			else
+			{
+				protingi.push_back(i);
+			}
+		}
+		auto endRusiavimas = std::chrono::high_resolution_clock::now();
+		auto rusiavimas = std::chrono::duration_cast<std::chrono::milliseconds>(endRusiavimas - startRusiavimas).count();
+		cout << "Failo rusiavimas truko: " << fixed << setprecision(2) << static_cast<double>(rusiavimas) / 1000 << "s" << endl;
+
+		IsvedimasIFaila(protingi, neprotingi, isvedimas);
 	}
-
-	ofstream stupid("neprotingi.txt");
-
-	stupid << left << setw(13) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
-	stupid << "-----------------------------------------------------------------------------------" << endl;
-	for (auto& i : neprotingi)
+	else if (strategija == "2")
 	{
-		stupid << left << setw(13) << i.vardas << setw(20) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
-	}
+		isvedimas = 0;
+		auto startRusiavimas = std::chrono::high_resolution_clock::now();
+		list <Studentas> neprotingi;
 
-	auto endIsvedimas = std::chrono::high_resolution_clock::now();
-	auto isvedimas = std::chrono::duration_cast<std::chrono::milliseconds>(endIsvedimas - startIsvedimas).count();
-	cout << "Failo isvedimas truko: " << fixed << setprecision(2) << static_cast<double>(isvedimas) / 1000 << "s" << endl;
+		auto it = std::remove_if(grupe.begin(), grupe.end(), [](const Studentas& s) { return !(s.vidurkis < 5.0); });
+		std::copy(it, grupe.end(), std::back_inserter(neprotingi));
+		grupe.erase(it, grupe.end());
+
+		auto endRusiavimas = std::chrono::high_resolution_clock::now();
+		auto rusiavimas = std::chrono::duration_cast<std::chrono::milliseconds>(endRusiavimas - startRusiavimas).count();
+		cout << "Failo rusiavimas truko: " << fixed << setprecision(2) << static_cast<double>(rusiavimas) / 1000 << "s" << endl;
+
+		IsvedimasIFaila(neprotingi, grupe, isvedimas);
+	}
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	std::cout << "Programos trukme: " << fixed << setprecision(2) << static_cast<double>(Rikiavimas + rusiavimas + nuskaitymas) / 1000 << "s" << endl;
+	std::cout << "Programos trukme: " << fixed << setprecision(2) << static_cast<double>(Rikiavimas + rusiavimas + nuskaitymas + isvedimas) / 1000 << "s" << endl;
 }
 
 bool Palyginimas(const Studentas a, Studentas b)
@@ -163,7 +177,6 @@ bool Palyginimas1(const Studentas a, Studentas b)
 {
 	return a.vidurkis < b.vidurkis;
 }
-
 
 void Pildymas(Studentas& temp)
 {
@@ -273,25 +286,33 @@ float Mediana(Studentas temp)
 	return pazymys;
 }
 
-void Isvedimas(list<Studentas> grupe)
+void IsvedimasIFaila(list<Studentas> protingi, list<Studentas> neprotingi, float& isvestis)
 {
-	cout << endl << left << setw(13) << "Vardas" << setw(15) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
-	cout << "-----------------------------------------------------------------------------------" << endl;
-	for (auto& i : grupe)
-	{
-		cout << left << setw(13) << i.vardas << setw(15) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
-	}
-}
+	auto startIsvedimas = std::chrono::high_resolution_clock::now();
+	ofstream smart("protingi.txt");
 
-void IsvedimasIFaila(list<Studentas> grupe)
-{
-	ofstream rezultatai("rezultatai.txt");
-	rezultatai << endl << left << setw(15) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
-	rezultatai << "-----------------------------------------------------------------------------------" << endl;
-	for (auto& i : grupe)
+	smart << left << setw(13) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
+	smart << "-----------------------------------------------------------------------------------" << endl;
+	for (auto& i : protingi)
 	{
-		rezultatai << left << setw(13) << i.vardas << setw(15) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
+		smart << left << setw(13) << i.vardas << setw(20) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
 	}
-	rezultatai.close();
-	cout << "Programa baigta, rezultatai surasyti i rezultatai.txt faila" << endl;
+
+	smart.close();
+
+	ofstream stupid("neprotingi.txt");
+
+	stupid << left << setw(13) << "Vardas" << setw(20) << "Pavarde" << setw(20) << "Galutinis (Vid.) /" << setw(20) << "Galutinis (Med.)" << endl;
+	stupid << "-----------------------------------------------------------------------------------" << endl;
+	for (auto& i : neprotingi)
+	{
+		stupid << left << setw(13) << i.vardas << setw(20) << i.pavarde << setw(20) << fixed << setprecision(2) << i.vidurkis << setw(20) << i.mediana << endl;
+	}
+
+	auto endIsvedimas = std::chrono::high_resolution_clock::now();
+	auto isvedimas = std::chrono::duration_cast<std::chrono::milliseconds>(endIsvedimas - startIsvedimas).count();
+	cout << "Failo isvedimas truko: " << fixed << setprecision(2) << static_cast<double>(isvedimas) / 1000 << "s" << endl;
+	isvestis = isvedimas;
+
+	stupid.close();
 }
